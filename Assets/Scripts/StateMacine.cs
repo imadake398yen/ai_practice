@@ -18,8 +18,11 @@ public class StateMacine : MonoBehaviour {
 	void Update () {
 
 		if (other) {
+			// 自分が向いてる方向の角度(transform.forwardは元々正規化ベクトル)
 			Vector3 forward = transform.TransformDirection(Vector3.forward);
+			// 自分と対象との正規化ベクトル
 			Vector3 toOther = Vector3.Normalize(other.position - transform.position);
+			// 内積で2つの正規化ベクトルをとることで自分と対象との角度が求められる
 			float dot = Vector3.Dot(forward, toOther);
         	
 			if (dot > 0.8f) {
