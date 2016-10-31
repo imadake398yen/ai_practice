@@ -9,6 +9,9 @@ public class EnemyController : MonoBehaviour {
 	private int currentTarget = 0;
 
 	[SerializeField]
+	private Transform player;
+
+	[SerializeField]
 	private Transform[] points;
 
 	[SerializeField]
@@ -27,22 +30,30 @@ public class EnemyController : MonoBehaviour {
 	
 	void Update () {
 
-		if (target) {
+		if (player) {
 			// 自分が向いてる方向の角度(transform.forwardは元々正規化ベクトル)
 			Vector3 forward = transform.forward;
 			// 自分と対象との正規化ベクトル
-			Vector3 toOther = Vector3.Normalize(target.position - transform.position);
+			Vector3 toOther = Vector3.Normalize(player.position - transform.position);
 			// 内積で2つの正規化ベクトルをとることで自分と対象との角度が求められる
 			float dot = Vector3.Dot(forward, toOther);
 
-			print (dot);
-        	
 			if (dot > 0.8f) {
-				state = STATE.ATTACK;
+				RaycastHit hit;
+				if (Physics.Raycast(
+					transform.position, 
+					player.position - transform.position, 
+					out hit, 
+					20.0f)) {
+
+					if (hit.transform.gameObject.tag == "Player") {
+						state = STATE.ATTACK;
+					}
+				}
 			}
-			if (dot <= 0.8f && dot > 0.1f) {
-				state = STATE.CARE;
-			}
+			// if (dot <= 0.8f && dot > 0.1f) {
+			// 	state = STATE.CARE;
+			// }
 			if (dot <= 0.1f) {
 				state = STATE.SAFE;
 			}
@@ -53,10 +64,7 @@ public class EnemyController : MonoBehaviour {
 				GetComponent<Renderer>().material.color = Color.green;
 				//ここにSAFE時の処理を書く
 				if (Vector3.Distance(transform.position, target.position) < 0.2f) {
-					if (currentTarget < points.Length-1) {
-						currentTarget += 1;
-					}
-					else currentTarget = 0;
+					currentTarget = (currentTarget < points.Length-1) ? currentTarget += 1 : 0;
 				}
 				target = points[currentTarget];
 				break;
@@ -67,6 +75,7 @@ public class EnemyController : MonoBehaviour {
 			case STATE.ATTACK:
 				GetComponent<Renderer>().material.color = Color.red;
 				//ATTACK時の処理
+				target = player;
 				break;
 		}
 
