@@ -51,6 +51,7 @@ public class EnemyController : MonoBehaviour {
 					}
 				}
 			}
+			// 一旦、CAREはなしで
 			// if (dot <= 0.8f && dot > 0.1f) {
 			// 	state = STATE.CARE;
 			// }
